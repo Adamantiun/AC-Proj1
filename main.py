@@ -3,14 +3,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 
-# Load and preprocess data for each table
-awards_players_df = pd.read_csv('awards_players.csv')
-coaches_df = pd.read_csv('coaches.csv')
-players_df = pd.read_csv('players.csv')
-players_teams_df = pd.read_csv('players_teams.csv')
-series_post_df = pd.read_csv('series_post.csv')
-teams_df = pd.read_csv('teams.csv')
-teams_post_df = pd.read_csv('teams_post.csv')
+# Load and preprocess original_data for each table
+awards_players_df = pd.read_csv('original_data/awards_players.csv')
+coaches_df = pd.read_csv('original_data/coaches.csv')
+players_df = pd.read_csv('original_data/players.csv')
+players_teams_df = pd.read_csv('original_data/players_teams.csv')
+series_post_df = pd.read_csv('original_data/series_post.csv')
+teams_df = pd.read_csv('original_data/teams.csv')
+teams_post_df = pd.read_csv('original_data/teams_post.csv')
 
 # Preprocess the 'teams' DataFrame to create a target variable 'playoff'
 teams['playoff'] = ...  # Create this column based on your criteria, "yes" or "no"
@@ -21,7 +21,7 @@ features = teams[['feature1', 'feature2', ...]]  # Replace with actual feature n
 # Select the target variable 'playoff' from the 'teams' DataFrame
 target = teams['playoff']
 
-# Split the data into training and testing sets
+# Split the original_data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=42)
 
 # Choose a model (e.g., Random Forest)
@@ -43,8 +43,8 @@ print("Classification Report:")
 print(report)
 
 # Make predictions for the next season
-# Assuming you have a DataFrame 'next_season_teams' containing data for the next season
-# Preprocess this data similarly to how you preprocessed the training data
+# Assuming you have a DataFrame 'next_season_teams' containing original_data for the next season
+# Preprocess this original_data similarly to how you preprocessed the training original_data
 
 next_season_predictions = model.predict(next_season_teams)
 
