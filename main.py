@@ -3,14 +3,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 
-# Load and preprocess original_data for each table
-awards_players_df = pd.read_csv('original_data/awards_players.csv')
-coaches_df = pd.read_csv('original_data/coaches.csv')
-players_df = pd.read_csv('original_data/players.csv')
-players_teams_df = pd.read_csv('original_data/players_teams.csv')
-series_post_df = pd.read_csv('original_data/series_post.csv')
-teams_df = pd.read_csv('original_data/teams.csv')
-teams_post_df = pd.read_csv('original_data/teams_post.csv')
+# Load and preprocess modified_data for each table
+awards_players_df = pd.read_csv('modified_data/awards_players.csv')
+coaches_df = pd.read_csv('modified_data/coaches.csv')
+players_df = pd.read_csv('modified_data/players.csv')
+players_teams_df = pd.read_csv('modified_data/players_teams.csv')
+series_post_df = pd.read_csv('modified_data/series_post.csv')
+teams_df = pd.read_csv('modified_data/teams.csv')
+teams_post_df = pd.read_csv('modified_data/teams_post.csv')
 
 # Preprocess the 'teams' DataFrame to create a target variable 'playoff'
 teams['playoff'] = ...  # Create this column based on your criteria, "yes" or "no"
