@@ -23,7 +23,7 @@ plt.tight_layout()
 
 plt.show()"""
 
-# Média de idades das jogadoras por equipas
+"""# Média de idades das jogadoras por equipas
 
 players_df = pd.read_csv('./modified_data/players.csv')
 players_teams_df = pd.read_csv('./modified_data/players_teams.csv')
@@ -52,5 +52,32 @@ plt.ylabel('Média de Idades dos Jogadores')
 plt.title('Média de Idades dos Jogadores por Equipe')
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.show()
+plt.show()"""
 
+
+# Win-Loss Rate
+
+# Load the data from your CSV file
+data = pd.read_csv("./modified_data/teams.csv")
+
+# Filter the data for the year 10
+data_year_10 = data[data['year'] == 10]
+
+# Group the data by team name and calculate the sum of wins and losses
+team_records = data_year_10.groupby('name')[['won', 'lost']].sum().reset_index()
+
+# Calculate win-loss rate
+team_records['win_loss_rate'] = team_records['won'] / (team_records['won'] + team_records['lost'])
+
+# Sort the data by win-loss rate (optional)
+team_records = team_records.sort_values(by='win_loss_rate', ascending=False)
+
+# Create a bar chart for win-loss rates of all teams
+plt.figure(figsize=(12, 8))
+plt.barh(team_records['name'], team_records['win_loss_rate'])
+plt.xlabel('Win-Loss Rate')
+plt.ylabel('Team')
+plt.title('Win-Loss Rate of All Teams in Year 10')
+plt.grid(axis='x')
+
+plt.show()
