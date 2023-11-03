@@ -48,7 +48,7 @@ exclude_columns(teams_input_path, teams_columns_to_exclude, teams_output_path)
 
 file_paths = ["./modified_data/teams.csv"] 
 
-columns_to_use = ["name", "d_to", "GP", "d_stl", "d_blk", "o_asts", "o_reb", "d_reb", "o_ftm", "o_fta", "o_3pm", "o_3pa", "o_fgm", "o_fga", "o_pts", "won", "lost", "playoff"]
+columns_to_use = ["name", "d_to", "GP", "d_stl", "d_blk", "o_asts", "o_reb", "d_reb", "o_ftm", "o_fta", "o_3pm", "o_3pa", "o_fgm", "o_fga", "o_pts", "won", "lost"]
 
 all_turnovers = []
 all_steals_blocks = []
@@ -112,11 +112,11 @@ for file_path in file_paths:
         wp.columns = ['name', 'Winning Percentage']
         all_winning_percentage.append(wp)
 
-    if 'playoff' in columns_to_use:
-        df = df[df['playoff'] == 'Y']
-        playoff_appearances = df['name'].value_counts().reset_index()
-        playoff_appearances.columns = ['name', 'Playoff Appearances']
-        all_playoff_appearances.append(playoff_appearances)
+    #if 'playoff' in columns_to_use:
+        #df = df[df['playoff'] == 'Y']
+        #playoff_appearances = df['name'].value_counts().reset_index()
+        #playoff_appearances.columns = ['name', 'Playoff Appearances']
+        #all_playoff_appearances.append(playoff_appearances)
 
 final_turnovers_df = pd.concat(all_turnovers, ignore_index=True)
 final_steals_blocks_df = pd.concat(all_steals_blocks, ignore_index=True)
@@ -127,7 +127,7 @@ final_3p_percentage_df = pd.concat(all_3p_percentage, ignore_index=True)
 final_fg_percentages_df = pd.concat(all_fg_percentages, ignore_index=True)
 final_points_per_game_df = pd.concat(all_points_per_game, ignore_index=True)
 final_winning_percentage_df = pd.concat(all_winning_percentage, ignore_index=True)
-final_playoff_appearances_df = pd.concat(all_playoff_appearances, ignore_index=True)
+#final_playoff_appearances_df = pd.concat(all_playoff_appearances, ignore_index=True)
 
 final_combined_df = final_turnovers_df.merge(final_steals_blocks_df, on='name', how='outer')
 final_combined_df = final_combined_df.merge(final_assists_df, on='name', how='outer')
@@ -137,11 +137,11 @@ final_combined_df = final_combined_df.merge(final_3p_percentage_df, on='name', h
 final_combined_df = final_combined_df.merge(final_fg_percentages_df, on='name', how='outer')
 final_combined_df = final_combined_df.merge(final_points_per_game_df, on='name', how='outer')
 final_combined_df = final_combined_df.merge(final_winning_percentage_df, on='name', how='outer')
-final_combined_df = final_combined_df.merge(final_playoff_appearances_df, on='name', how='outer')
+#final_combined_df = final_combined_df.merge(final_playoff_appearances_df, on='name', how='outer')
 
 final_combined_df.to_csv("combined_data.csv", index=False)
 
-print(final_combined_df)
+#print(final_combined_df)
 
 
 
