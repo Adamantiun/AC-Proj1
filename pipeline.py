@@ -56,19 +56,18 @@ teams_post_data = pd.read_csv(os.path.join(current_dir, 'modified_data/teams_pos
 
 columns_to_use = ["name", "d_to", "GP", "d_stl", "d_blk", "o_asts", "o_reb", "d_reb", "o_ftm", "o_fta", "o_3pm", "o_3pa", "o_fgm", "o_fga", "o_pts", "won", "lost"]
 
-all_turnovers = []
-all_steals_blocks = []
-all_assists = []
-all_rebounds = []
-all_ft_percentages = []
-all_3p_percentage = []
-all_fg_percentages = []
-all_points_per_game = []
-all_winning_percentage = []
-all_playoff_appearances = []
+combined_data = pd.merge(awards_players_data, players_data, on='playerID', how='inner')
+combined_data = pd.merge(players_teams_data, combined_data, on='playerID', how='inner')
+combined_data = pd.merge(teams_data, combined_data, on='tmID', how='inner')
+combined_data = pd.merge(coaches_data, combined_data, on='tmID', how='inner')
+combined_data = pd.merge(teams_post_data, combined_data, on='tmID', how='inner')
+combined_data = pd.merge(series_post_data, combined_data, on='year', how='inner')
 
-combined_data = pd.merge(awards_players_data, players_data, on='teamid', how='outer')
+combined_data['playoff'].fillna('NA', inplace=True)
 combined_data.to_csv('combined_data.csv', index=False)
+combined_data.drop(columns=['year_x', 'year_y'], inplace=True)
+
+
 
 X = combined_data.drop('playoff', axis=1)
 y = combined_data['playoff']
