@@ -21,4 +21,8 @@ def convert_columns_to_ratio(input_path, column_pairs, output_path):
 
     print(f"Columns {', '.join([f'{pair[0]}/{pair[1]}' for pair in column_pairs])} converted to ratio columns and new file saved as '{output_path}'" + '\n')
 
-
+def rename_columns(input_path, column_mapping, output_path):
+    df = pd.read_csv(input_path)
+    df.rename(columns=column_mapping, inplace=True)
+    df.to_csv(output_path, index=False)
+    print(f"Columns renamed and new file saved as '{output_path}'" + '\n')

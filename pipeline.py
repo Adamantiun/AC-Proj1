@@ -26,14 +26,16 @@ exclude_columns(teams_input_path, teams_columns_to_exclude, teams_output_path)
 players_input_path = 'original_data/players.csv'
 players_columns_to_exclude = ['firstseason', 'lastseason', 'height', 'weight', 'college', 'collegeOther', 'deathDate']
 players_output_path = 'modified_data/players.csv'
-
 exclude_columns(players_input_path, players_columns_to_exclude, players_output_path)
+
+column_mapping = {'bioID': 'playerID'}
+rename_columns(players_output_path, column_mapping, players_output_path)
+
 
 # AWARDS_PLAYERS
 players_input_path = 'original_data/awards_players.csv'
 players_columns_to_exclude = ['award', 'lgID']
 players_output_path = 'modified_data/awards_players.csv'
-
 exclude_columns(players_input_path, players_columns_to_exclude, players_output_path)
 
 # TEAMS_POST
@@ -42,7 +44,6 @@ teams_columns_to_exclude = ['lgID']
 teams_output_path = 'modified_data/teams_post.csv'
 
 exclude_columns(teams_input_path, teams_columns_to_exclude, teams_output_path)
-
 
 
 awards_players_data = pd.read_csv(os.path.join(current_dir, 'modified_data/awards_players.csv'))
@@ -66,7 +67,7 @@ all_points_per_game = []
 all_winning_percentage = []
 all_playoff_appearances = []
 
-combined_data = pd.concat([awards_players_data, coaches_data, players_data, players_teams_data, series_post_data, teams_data, teams_post_data], ignore_index=True)
+combined_data = pd.merge(awards_players_data, players_data, on='teamid', how='outer')
 combined_data.to_csv('combined_data.csv', index=False)
 
 X = combined_data.drop('playoff', axis=1)
