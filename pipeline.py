@@ -140,10 +140,11 @@ df_relevant_series_post = df_relevant_series_post.dropna(subset=['tmIDWinner'])
 # Calcular a winrate
 df_relevant_series_post['sp_winRate'] = (df_relevant_series_post['sp_winCount'] / (df_relevant_series_post['sp_winCount'] + df_relevant_series_post['sp_lossCount'])).fillna(0)
 # Selecionar as colunas relevantes
-df_relevant_series_post = df_relevant_series_post[['year', 'tmIDWinner', 'sp_maxRound']]
+df_relevant_series_post = df_relevant_series_post[['year', 'tmIDWinner', 'sp_winRate', 'sp_maxRound']]
 # Fazer o join com o DataFrame df_relevant_series_post
 df_teams = pd.merge(df_teams, df_relevant_series_post, how='left', left_on=['year', 'tmID'], right_on=['year', 'tmIDWinner'])
 # Preencher os valores nulos com 0 para as colunas 'sp_winRate' e 'sp_maxRound'
+df_teams['sp_winRate'] = df_teams['sp_winRate'].fillna(0)
 df_teams['sp_maxRound'] = df_teams['sp_maxRound'].fillna(0)
 
 df_teams = df_teams.round(2)
