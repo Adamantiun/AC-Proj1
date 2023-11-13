@@ -106,6 +106,24 @@ df_teams = df_teams.drop(['PostfgMade', 'PostfgAttempted'], axis=1)
 df_teams = df_teams.drop(['PostftMade', 'PostftAttempted'], axis=1)
 df_teams = df_teams.drop(['PostthreeMade', 'PostthreeAttempted'], axis=1)
 
+# now adding average player awards
+df_awards = pd.read_csv('original_data/awards_players.csv')
+df_players = pd.read_csv('original_data/players.csv')
+df_players_teams = pd.read_csv('original_data/players_teams.csv')
+# Processar os prêmios dos jogadores
+df_awards_summed = df_awards.groupby('playerID').size().reset_index(name='totalAwards')
+# Juntar os jogadores com os prêmios
+df_players_with_awards = pd.merge(df_players, df_awards_summed, how='left', left_on='bioID', right_on='playerID')
+df_players_with_awards['totalAwards'] = df_players_with_awards['totalAwards'].fillna(0).astype(int)
+df_players_with_awards = df_players_with_awards.drop(columns='playerID')
+# Juntar os jogadores com as equipes
+df_merged_teams = pd.merge(df_players_teams, df_players_with_awards, how='left', left_on='playerID', right_on='bioID')
+# Calcular a média de prêmios por equipe em cada ano
+df_teams_avg_awards = df_merged_teams.groupby(['tmID', 'year'])['totalAwards'].mean().reset_index().rename(columns={'totalAwards': 'avgAwards'})
+# Juntar as equipes com a média de prêmios
+df_teams = pd.merge(df_teams, df_teams_avg_awards, how='left', on=['tmID', 'year'])
+
+
 df_teams = df_teams.round(2)
 
 df_teams.to_csv('2.0_data/teams_stats.csv', index=False)
