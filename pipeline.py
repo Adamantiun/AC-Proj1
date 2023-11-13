@@ -123,6 +123,28 @@ df_teams_avg_awards = df_merged_teams.groupby(['tmID', 'year'])['totalAwards'].m
 # Juntar as equipes com a média de prêmios
 df_teams = pd.merge(df_teams, df_teams_avg_awards, how='left', on=['tmID', 'year'])
 
+# adicionar dados de series_post.csv
+df_series_post = pd.read_csv('original_data/series_post.csv')
+# Criar uma coluna 'maxRound' usando um dicionário de mapeamento
+round_mapping = {'FR': 1, 'CF': 2, 'F': 3}
+df_series_post['maxRound'] = df_series_post['round'].map(round_mapping)
+# Criar um DataFrame auxiliar para 'tmIDWinner'
+df_winner = df_series_post.groupby(['year', 'tmIDWinner']).agg(sp_winCount=('round', 'count'), sp_maxRound=('maxRound', 'max')).reset_index()
+# Criar um DataFrame auxiliar para 'tmIDLoser'
+df_loser = df_series_post.groupby(['year', 'tmIDLoser']).agg(sp_lossCount=('round', 'count')).reset_index()
+# Juntar os DataFrames auxiliares para 'tmIDWinner' e 'tmIDLoser'
+df_relevant_series_post = pd.merge(df_winner, df_loser, how='outer', left_on=['year', 'tmIDWinner'], right_on=['year', 'tmIDLoser'])
+# Preencher valores nulos com 0 e remover linhas com 'tmID' nulo
+df_relevant_series_post['sp_lossCount'] = df_relevant_series_post['sp_lossCount'].fillna(0)
+df_relevant_series_post = df_relevant_series_post.dropna(subset=['tmIDWinner'])
+# Calcular a winrate
+df_relevant_series_post['sp_winRate'] = (df_relevant_series_post['sp_winCount'] / (df_relevant_series_post['sp_winCount'] + df_relevant_series_post['sp_lossCount'])).fillna(0)
+# Selecionar as colunas relevantes
+df_relevant_series_post = df_relevant_series_post[['year', 'tmIDWinner', 'sp_maxRound']]
+# Fazer o join com o DataFrame df_relevant_series_post
+df_teams = pd.merge(df_teams, df_relevant_series_post, how='left', left_on=['year', 'tmID'], right_on=['year', 'tmIDWinner'])
+# Preencher os valores nulos com 0 para as colunas 'sp_winRate' e 'sp_maxRound'
+df_teams['sp_maxRound'] = df_teams['sp_maxRound'].fillna(0)
 
 df_teams = df_teams.round(2)
 
