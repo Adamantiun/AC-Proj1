@@ -272,11 +272,11 @@ final_combined_df['Playoff prediction'] = 0
 
 final_combined_df.to_csv("combined_data.csv", index=False)
 
-print(final_combined_df)"""
+print(final_combined_df)
 
 
 
-# players_teams modificado para estatistica por equipa
+# players_teams modificado para teams_stats
 
 df = pd.read_csv('modified_data/players_teams.csv')
 
@@ -321,3 +321,25 @@ df_teams = df.groupby(['year', 'tmID']).agg({
 df_teams = df_teams.round(2)
 
 df_teams.to_csv('2.0_data/teams_stats.csv', index=False)
+"""
+
+
+
+# coaches to coachesWinRate
+
+df_coaches = pd.read_csv('modified_data/coaches.csv')
+
+df_coaches['games'] = df_coaches['won'] + df_coaches['lost']
+
+df_win_loss = df_coaches.groupby('coachID').agg({
+    'games': 'sum',
+    'won': 'sum'
+}).reset_index()
+
+df_win_loss['currentWinRate'] = df_win_loss['won'] / df_win_loss['games']
+
+df_win_loss = df_win_loss.round(2)
+
+df_result = df_win_loss[['coachID', 'games', 'currentWinRate']]
+
+df_result.to_csv('2.0_data/coachesWinRate.csv', index=False)
