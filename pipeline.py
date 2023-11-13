@@ -147,27 +147,21 @@ df_teams = pd.merge(df_teams, df_relevant_series_post, how='left', left_on=['yea
 df_teams['sp_winRate'] = df_teams['sp_winRate'].fillna(0)
 df_teams['sp_maxRound'] = df_teams['sp_maxRound'].fillna(0)
 
+# coaches to coachesWinRate
+
+df_coaches = pd.read_csv('original_data/coaches.csv')
+df_coaches['coachWinRate'] = (df_coaches['won'] / (df_coaches['won'] + df_coaches['lost']))
+df_coaches['coachTotalGames'] = (df_coaches['won'] + df_coaches['lost'])
+df_coaches = df_coaches.round(2)
+df_coaches = df_coaches.drop(["lgID", "stint", "won", "lost", "post_wins", "post_losses", "coachID"], axis=1)
+
+df_teams = pd.merge(df_teams, df_coaches, how='left', on=['year', 'tmID'])
+
 df_teams = df_teams.round(2)
 
 df_teams.to_csv('2.0_data/teams_stats.csv', index=False)
 
 msg = "team_stats.csv created\n"
-print(msg)
-
-
-# coaches to coachesWinRate
-
-df_coaches = pd.read_csv('original_data/coaches.csv')
-
-df_coaches['coachWinRate'] = (df_coaches['won'] / (df_coaches['won'] + df_coaches['lost']))
-
-df_coaches = df_coaches.round(2)
-
-df_coaches = df_coaches.drop(["lgID", "stint", "won", "lost", "post_wins", "post_losses"], axis=1)
-
-df_coaches.to_csv('2.0_data/coachesWinRate.csv', index=False)
-
-msg = "coachesWinRate.csv created"
 print(msg)
 
 
