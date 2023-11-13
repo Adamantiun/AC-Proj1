@@ -46,7 +46,84 @@ teams_output_path = 'modified_data/teams_post.csv'
 exclude_columns(teams_input_path, teams_columns_to_exclude, teams_output_path)
 
 
-awards_players_data = pd.read_csv(os.path.join(current_dir, 'modified_data/awards_players.csv'))
+
+# players_teams modificado para teams_stats
+
+df = pd.read_csv('original_data/players_teams.csv')
+
+df_teams = df.groupby(['year', 'tmID']).agg({
+    'GP': 'sum',
+    'GS': 'sum',
+    'minutes': 'sum',
+    'points': 'sum',
+    'oRebounds': 'sum',
+    'dRebounds': 'sum',
+    'rebounds': 'sum',
+    'assists': 'sum',
+    'steals': 'sum',
+    'blocks': 'sum',
+    'turnovers': 'sum',
+    'PF': 'sum',
+    'fgAttempted': 'sum',
+    'fgMade': 'sum',
+    'ftAttempted': 'sum',
+    'ftMade': 'sum',
+    'threeAttempted': 'sum',
+    'threeMade': 'sum',
+    'dq': 'sum',
+    'PostGP': 'sum',
+    'PostGS': 'sum',
+    'PostMinutes': 'sum',
+    'PostPoints': 'sum',
+    'PostoRebounds': 'sum',
+    'PostdRebounds': 'sum',
+    'PostRebounds': 'sum',
+    'PostAssists': 'sum',
+    'PostSteals': 'sum',
+    'PostBlocks': 'sum',
+    'PostTurnovers': 'sum',
+    'PostPF': 'sum',
+    'PostfgAttempted': 'sum',
+    'PostfgMade': 'sum',
+    'PostftAttempted': 'sum',
+    'PostftMade': 'sum',
+    'PostthreeAttempted': 'sum',
+    'PostthreeMade': 'sum',
+    'PostDQ': 'sum'
+}).reset_index()
+
+df_teams = df_teams.round(2)
+
+df_teams.to_csv('2.0_data/teams_stats.csv', index=False)
+
+msg = "team_stats.csv created\n"
+print(msg)
+
+
+# coaches to coachesWinRate
+
+df_coaches = pd.read_csv('original_data/coaches.csv')
+
+df_coaches['games'] = df_coaches['won'] + df_coaches['lost']
+
+df_win_loss = df_coaches.groupby('coachID').agg({
+    'games': 'sum',
+    'won': 'sum'
+}).reset_index()
+
+df_win_loss['currentWinRate'] = df_win_loss['won'] / df_win_loss['games']
+
+df_win_loss = df_win_loss.round(2)
+
+df_result = df_win_loss[['coachID', 'games', 'currentWinRate']]
+
+df_result.to_csv('2.0_data/coachesWinRate.csv', index=False)
+
+msg = "coachesWinRate.csv created"
+print(msg)
+
+
+"""awards_players_data = pd.read_csv(os.path.join(current_dir, 'modified_data/awards_players.csv'))
 coaches_data = pd.read_csv(os.path.join(current_dir, 'modified_data/coaches.csv'))
 players_data = pd.read_csv(os.path.join(current_dir, 'modified_data/players.csv'))
 players_teams_data = pd.read_csv(os.path.join(current_dir, 'modified_data/players_teams.csv'))
@@ -74,4 +151,4 @@ y = combined_data['playoff']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 s = setup(data=combined_data, target='playoff', session_id=123, normalize=True)
-compare_models()
+compare_models()"""
