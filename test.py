@@ -173,7 +173,7 @@ df['Turnovers'] = (df['d_to']) / df['GP']
 fg_percentages = df.groupby('name')['Turnovers'].mean().reset_index()
 result = fg_percentages.sort_values(by='Turnovers', ascending=False)
 
-print(result)"""
+print(result)
 
 
 file_paths = ["./modified_data/teams.csv"] 
@@ -272,4 +272,52 @@ final_combined_df['Playoff prediction'] = 0
 
 final_combined_df.to_csv("combined_data.csv", index=False)
 
-print(final_combined_df)
+print(final_combined_df)"""
+
+
+
+# players_teams modificado para estatistica por equipa
+
+df = pd.read_csv('modified_data/players_teams.csv')
+
+df_teams = df.groupby(['year', 'tmID']).agg({
+    'GP': 'sum',
+    'GS': 'sum',
+    'minutes': 'sum',
+    'points': 'sum',
+    'oRebounds': 'sum',
+    'dRebounds': 'sum',
+    'rebounds': 'sum',
+    'assists': 'sum',
+    'steals': 'sum',
+    'blocks': 'sum',
+    'turnovers': 'sum',
+    'PF': 'sum',
+    'dq': 'sum',
+    'PostGP': 'sum',
+    'PostGS': 'sum',
+    'PostMinutes': 'sum',
+    'PostPoints': 'sum',
+    'PostoRebounds': 'sum',
+    'PostdRebounds': 'sum',
+    'PostRebounds': 'sum',
+    'PostAssists': 'sum',
+    'PostSteals': 'sum',
+    'PostBlocks': 'sum',
+    'PostTurnovers': 'sum',
+    'PostPF': 'sum',
+    'PostfgAttempted': 'sum',
+    'PostfgMade': 'sum',
+    'PostftAttempted': 'sum',
+    'PostftMade': 'sum',
+    'PostthreeAttempted': 'sum',
+    'PostthreeMade': 'sum',
+    'PostDQ': 'sum',
+    'fgMade_fgAttempted_Ratio': 'mean',
+    'ftMade_ftAttempted_Ratio': 'mean',
+    'threeMade_threeAttempted_Ratio': 'mean'
+}).reset_index()
+
+df_teams = df_teams.round(2)
+
+df_teams.to_csv('2.0_data/teams_stats.csv', index=False)
