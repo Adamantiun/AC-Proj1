@@ -6,47 +6,6 @@ from pycaret.classification import *
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# PLAYERS_TEAMS
-player_teams_input_path = 'original_data/players_teams.csv'
-player_teams_column_pairs = [('fgMade', 'fgAttempted'), ('ftMade', 'ftAttempted'), ('threeMade', 'threeAttempted')]
-player_teams_output_path = 'modified_data/players_teams.csv'
-convert_columns_to_ratio(player_teams_input_path, player_teams_column_pairs, player_teams_output_path)
-
-player_teams_columns_to_exclude = ['fgMade', 'fgAttempted', 'ftMade', 'ftAttempted', 'threeMade', 'threeAttempted']
-exclude_columns(player_teams_output_path, player_teams_columns_to_exclude, player_teams_output_path)
-
-# TEAMS
-teams_input_path = 'original_data/teams.csv'
-teams_columns_to_exclude = ['confW', 'confL', 'min', 'attend', 'arena', 'tmORB', 'tmDRB', 'tmTRB', 'opptmORB', 'opptmDRB', 'opptmTRB', 'divID', 'seeded']
-teams_output_path = 'modified_data/teams.csv'
-
-exclude_columns(teams_input_path, teams_columns_to_exclude, teams_output_path)
-
-# PLAYERS
-players_input_path = 'original_data/players.csv'
-players_columns_to_exclude = ['firstseason', 'lastseason', 'height', 'weight', 'college', 'collegeOther', 'deathDate']
-players_output_path = 'modified_data/players.csv'
-exclude_columns(players_input_path, players_columns_to_exclude, players_output_path)
-
-column_mapping = {'bioID': 'playerID'}
-rename_columns(players_output_path, column_mapping, players_output_path)
-
-
-# AWARDS_PLAYERS
-players_input_path = 'original_data/awards_players.csv'
-players_columns_to_exclude = ['award', 'lgID']
-players_output_path = 'modified_data/awards_players.csv'
-exclude_columns(players_input_path, players_columns_to_exclude, players_output_path)
-
-# TEAMS_POST
-teams_input_path = 'original_data/teams_post.csv'
-teams_columns_to_exclude = ['lgID']
-teams_output_path = 'modified_data/teams_post.csv'
-
-exclude_columns(teams_input_path, teams_columns_to_exclude, teams_output_path)
-
-
-
 # players_teams modificado para teams_stats
 
 df = pd.read_csv('original_data/players_teams.csv')
@@ -164,33 +123,78 @@ df_teams.to_csv('2.0_data/teams_stats.csv', index=False)
 msg = "team_stats.csv created\n"
 print(msg)
 
+# coaches to coachesWinRate
 
-"""awards_players_data = pd.read_csv(os.path.join(current_dir, 'modified_data/awards_players.csv'))
-coaches_data = pd.read_csv(os.path.join(current_dir, 'modified_data/coaches.csv'))
-players_data = pd.read_csv(os.path.join(current_dir, 'modified_data/players.csv'))
-players_teams_data = pd.read_csv(os.path.join(current_dir, 'modified_data/players_teams.csv'))
-series_post_data = pd.read_csv(os.path.join(current_dir, 'modified_data/series_post.csv'))
-teams_data = pd.read_csv(os.path.join(current_dir, 'modified_data/teams.csv'))
-teams_post_data = pd.read_csv(os.path.join(current_dir, 'modified_data/teams_post.csv'))
+df_coaches = pd.read_csv('original_data/coaches.csv')
 
-columns_to_use = ["name", "d_to", "GP", "d_stl", "d_blk", "o_asts", "o_reb", "d_reb", "o_ftm", "o_fta", "o_3pm", "o_3pa", "o_fgm", "o_fga", "o_pts", "won", "lost"]
+df_coaches['coachWinRate'] = (df_coaches['won'] / (df_coaches['won'] + df_coaches['lost']))
 
-combined_data = pd.merge(awards_players_data, players_data, on='playerID', how='inner')
-combined_data = pd.merge(players_teams_data, combined_data, on='playerID', how='inner')
-combined_data = pd.merge(teams_data, combined_data, on='tmID', how='inner')
-combined_data = pd.merge(coaches_data, combined_data, on='tmID', how='inner')
-combined_data = pd.merge(teams_post_data, combined_data, on='tmID', how='inner')
-combined_data = pd.merge(series_post_data, combined_data, on='year', how='inner')
+df_coaches = df_coaches.round(2)
+
+df_coaches = df_coaches.drop(["lgID", "stint", "won", "lost", "post_wins", "post_losses"], axis=1)
+
+df_coaches.to_csv('2.0_data/coachesWinRate.csv', index=False)
+
+msg = "coachesWinRate.csv created"
+print(msg)
+
+### TEAMS TO TEAMS 2.0 ###
+
+teams = pd.read_csv('original_data/teams.csv')
+teams_post = pd.read_csv('original_data/teams_post.csv')
+
+# Feature selection
+selected_features = ['playoff', 'year', 'tmID', 'won', 'lost', 'GP', 'o_pts', 'd_pts', 'o_reb', 'd_reb', 'o_asts', 'o_stl', 'o_blk', 'o_fga', 'o_to' , 'confW', 'confL', 'homeW', 'homeL', 'awayW', 'awayL', 'd_fga', 'd_stl']
+
+# Create teams 2.0 dataframe with selected features
+teams_2_0 = teams[selected_features].copy()
+
+# Calculate win rates
+teams_2_0['home_win_pct'] = teams_2_0['homeW'] / (teams_2_0['homeW'] + teams_2_0['homeL'])
+teams_2_0['away_win_pct'] = teams_2_0['awayW'] / (teams_2_0['awayW'] + teams_2_0['awayL'])
+teams_2_0['conf_win_rate'] = teams_2_0['confW'] / (teams_2_0['confW'] + teams_2_0['confL'])
+
+# Efficiencies
+teams_2_0['scoring_efficiency'] = teams_2_0['o_pts'] / teams_2_0['o_fga']
+teams_2_0['reb_efficiency'] = teams_2_0['o_reb'] / teams_2_0['o_fga']
+teams_2_0['defensive_pts_efficiency'] = teams_2_0['d_pts'] / teams_2_0['GP']
+teams_2_0['def_reb_efficiency'] = teams_2_0['d_reb'] / teams_2_0['d_fga']
+teams_2_0['off_reb_efficiency'] = teams_2_0['o_reb'] / teams_2_0['o_fga']
+teams_2_0['ast_to_ratio'] = teams_2_0['o_asts'] / teams_2_0['o_to']
+
+# Per games
+teams_2_0['steals_per_game'] = teams_2_0['o_stl'] / teams_2_0['GP']
+teams_2_0['blocks_per_game'] = teams_2_0['o_blk'] / teams_2_0['GP']
+
+# Add playoff information if available
+if 'W' in teams_post.columns and 'L' in teams_post.columns:
+    total_playoff_games = teams_post['W'] + teams_post['L']
+    teams_2_0['playoff_win_pct'] = teams_post['W'] / total_playoff_games if not total_playoff_games.empty and (total_playoff_games > 0).all() else 0
+else:
+    teams_2_0['playoff_win_pct'] = 0
+
+teams_2_0['playoff_win_pct'].fillna(0, inplace=True)
+teams_2_0.to_csv('2.0_data/teams.csv', index=False)
+
+teams_input_path = '2.0_data/teams.csv'
+teams_columns_to_exclude = ['homeW', 'homeL', 'awayW', 'awayL', 'o_pts', 'o_fga', 'o_asts', 'o_to', 'won', 'GP', 'd_pts', 'd_fga', 'd_reb', 'd_stl', 'o_stl', 'o_blk', 'confW', 'confL']
+teams_output_path = '2.0_data/teams.csv'
+exclude_columns(teams_input_path, teams_columns_to_exclude, teams_output_path)
+
+teams = pd.read_csv(os.path.join(current_dir, '2.0_data/teams.csv'))
+coachesWinRate = pd.read_csv(os.path.join(current_dir, '2.0_data/coachesWinRate.csv'))
+teams_stats = pd.read_csv(os.path.join(current_dir, '2.0_data/teams_stats.csv'))
+
+combined_data = pd.merge(teams, teams_stats, on='tmID', how='outer')
+#combined_data = pd.merge(coachesWinRate, combined_data, on='tmID', how='outer')
 
 combined_data['playoff'].fillna('NA', inplace=True)
 combined_data.to_csv('combined_data.csv', index=False)
 combined_data.drop(columns=['year_x', 'year_y'], inplace=True)
-
-
 
 X = combined_data.drop('playoff', axis=1)
 y = combined_data['playoff']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 s = setup(data=combined_data, target='playoff', session_id=123, normalize=True)
-compare_models()"""
+compare_models()
