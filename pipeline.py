@@ -159,7 +159,7 @@ print(msg)
 
 df_coaches = pd.read_csv('original_data/coaches.csv')
 
-df_coaches['currentWinRate'] = (df_coaches['won'] / (df_coaches['won'] + df_coaches['lost']))
+df_coaches['coachWinRate'] = (df_coaches['won'] / (df_coaches['won'] + df_coaches['lost']))
 
 df_coaches = df_coaches.round(2)
 
