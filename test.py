@@ -324,7 +324,7 @@ df_teams.to_csv('2.0_data/teams_stats.csv', index=False)
 
 
 
-
+"""
 # coaches to coachesWinRate
 
 df_coaches = pd.read_csv('original_data/coaches.csv')
@@ -342,4 +342,4 @@ df_win_loss = df_win_loss.round(2)
 
 df_result = df_win_loss[['coachID', 'games', 'currentWinRate']]
 
-df_result.to_csv('2.0_data/coachesWinRate.csv', index=False)
+df_result.to_csv('2.0_data/coachesWinRate.csv', index=False)"""

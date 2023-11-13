@@ -92,6 +92,20 @@ df_teams = df.groupby(['year', 'tmID']).agg({
     'PostDQ': 'sum'
 }).reset_index()
 
+df_teams['fgRate'] = df_teams['fgMade'] / df_teams['fgAttempted']
+df_teams['ftRate'] = df_teams['ftMade'] / df_teams['ftAttempted']
+df_teams['threeRate'] = df_teams['threeMade'] / df_teams['threeAttempted']
+df_teams['postFgRate'] = df_teams['PostfgMade'] / df_teams['PostfgAttempted']
+df_teams['postFtRate'] = df_teams['PostftMade'] / df_teams['PostftAttempted']
+df_teams['postThreeRate'] = df_teams['PostthreeMade'] / df_teams['PostthreeAttempted']
+
+df_teams = df_teams.drop(['fgAttempted', 'fgMade'], axis=1)
+df_teams = df_teams.drop(['ftAttempted', 'ftMade'], axis=1)
+df_teams = df_teams.drop(['threeAttempted', 'threeMade'], axis=1)
+df_teams = df_teams.drop(['PostfgMade', 'PostfgAttempted'], axis=1)
+df_teams = df_teams.drop(['PostftMade', 'PostftAttempted'], axis=1)
+df_teams = df_teams.drop(['PostthreeMade', 'PostthreeAttempted'], axis=1)
+
 df_teams = df_teams.round(2)
 
 df_teams.to_csv('2.0_data/teams_stats.csv', index=False)
