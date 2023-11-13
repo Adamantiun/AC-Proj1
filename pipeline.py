@@ -159,20 +159,13 @@ print(msg)
 
 df_coaches = pd.read_csv('original_data/coaches.csv')
 
-df_coaches['games'] = df_coaches['won'] + df_coaches['lost']
+df_coaches['currentWinRate'] = (df_coaches['won'] / (df_coaches['won'] + df_coaches['lost']))
 
-df_win_loss = df_coaches.groupby('coachID').agg({
-    'games': 'sum',
-    'won': 'sum'
-}).reset_index()
+df_coaches = df_coaches.round(2)
 
-df_win_loss['currentWinRate'] = df_win_loss['won'] / df_win_loss['games']
+df_coaches = df_coaches.drop(["lgID", "stint", "won", "lost", "post_wins", "post_losses"], axis=1)
 
-df_win_loss = df_win_loss.round(2)
-
-df_result = df_win_loss[['coachID', 'games', 'currentWinRate']]
-
-df_result.to_csv('2.0_data/coachesWinRate.csv', index=False)
+df_coaches.to_csv('2.0_data/coachesWinRate.csv', index=False)
 
 msg = "coachesWinRate.csv created"
 print(msg)
