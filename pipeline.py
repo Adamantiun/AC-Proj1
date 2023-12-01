@@ -81,7 +81,7 @@ df_merged_teams = pd.merge(df_players_teams, df_players_with_awards, how='left',
 df_teams_avg_awards = df_merged_teams.groupby(['tmID', 'year'])['totalAwards'].mean().reset_index().rename(columns={'totalAwards': 'avgAwards'})
 # Juntar as equipes com a média de prêmios
 df_teams = pd.merge(df_teams, df_teams_avg_awards, how='left', on=['tmID', 'year'])
-
+"""
 # adicionar dados de series_post.csv
 df_series_post = pd.read_csv('original_data/series_post.csv')
 # Criar uma coluna 'maxRound' usando um dicionário de mapeamento
@@ -105,7 +105,7 @@ df_teams = pd.merge(df_teams, df_relevant_series_post, how='left', left_on=['yea
 # Preencher os valores nulos com 0 para as colunas 'sp_winRate' e 'sp_maxRound'
 df_teams['sp_winRate'] = df_teams['sp_winRate'].fillna(0)
 df_teams['sp_maxRound'] = df_teams['sp_maxRound'].fillna(0)
-
+"""
 # coaches to coachesWinRate
 
 df_coaches = pd.read_csv('original_data/coaches.csv')
