@@ -185,16 +185,26 @@ teams = pd.read_csv(os.path.join(current_dir, '2.0_data/teams.csv'))
 coachesWinRate = pd.read_csv(os.path.join(current_dir, '2.0_data/coachesWinRate.csv'))
 teams_stats = pd.read_csv(os.path.join(current_dir, '2.0_data/teams_stats.csv'))
 
-combined_data = pd.merge(teams, teams_stats, on='tmID', how='outer')
-#combined_data = pd.merge(coachesWinRate, combined_data, on='tmID', how='outer')
+combined_data = teams
+#combined_data = pd.merge(teams, teams_stats, on='tmID', how='outer')
+#combined_data = pd.merge(coachesWinRate, combined_data, on='year', how='inner')
+#combined_data.drop(columns=['playoff_win_pct'], inplace=True)
 
 combined_data['playoff'].fillna('NA', inplace=True)
-combined_data.to_csv('combined_data.csv', index=False)
-combined_data.drop(columns=['year_x', 'year_y'], inplace=True)
 
-X = combined_data.drop('playoff', axis=1)
+combined_data['set'] = 'x'
+combined_data.loc[combined_data['year'] > 9, 'set'] = 'y'
+
+#combined_data.drop(columns=['year_x', 'year_y'], inplace=True)
+combined_data.drop(columns=['playoff_win_pct'], inplace=True)
+combined_data.to_csv('combined_data.csv', index=False)
+
+X = combined_data.drop(['playoff'], axis=1)
 y = combined_data['playoff']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=combined_data['set'])
+X_train = X_train.drop('set', axis=1)
+X_test = X_test.drop('set', axis=1)
 
 s = setup(data=combined_data, target='playoff', session_id=123, normalize=True)
 compare_models()
