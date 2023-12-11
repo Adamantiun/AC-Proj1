@@ -5,7 +5,7 @@ import os
 from sklearn.model_selection import train_test_split
 from pycaret.classification import *
 
-def pipeline(teams, players_teams, coaches, ytp):
+def pipeline(teams, players_teams, coaches, teams_comp, player_teams_comp, coaches_comp):
 
     ### PLAYER_TEAMS ###
 
@@ -54,6 +54,33 @@ def pipeline(teams, players_teams, coaches, ytp):
 
     combined_data = combined_data.round(2)
 
+    ### PLAYER_TEAMS_COMP ###
+
+    player_teams_comp = player_teams_comp.drop( ["stint", "lgID"], axis=1)
+
+    player_teams_comp.to_csv('debug/players_teams_comp.csv', index=False)
+
+    ### COACHES_COMP ###
+    coaches_comp = coaches_comp.drop(["lgID", "stint"], axis=1)
+    coaches_comp = coaches_comp.round(2)
+
+    coaches_comp.to_csv('debug/coaches_comp.csv', index=False)
+
+    ### TEAMS_COMP ###
+
+    selected_features_comp = ["year", "tmID"]
+
+    teams_comp = teams_comp[selected_features_comp].copy()
+
+    teams_comp.to_csv('debug/teams_comp.csv', index=False)
+
+    ### COMBINE_COMP ###
+
+    combined_data_comp = pd.merge(teams_comp, coaches_comp, on=['year', 'tmID'], how='outer')
+    combined_data_comp = pd.merge(combined_data_comp, player_teams_comp, on=['year', 'tmID'], how='outer')
+
+    combined_data_comp = combined_data_comp.round(2)
+
     threshold = 0.2
 
     # Calculate the correlation matrix
@@ -72,14 +99,14 @@ def pipeline(teams, players_teams, coaches, ytp):
     # Create a new DataFrame with only the selected columns
     combined_data = combined_data[high_corr_columns]
 
-    X = combined_data[combined_data['year'] < ytp]
-    y = combined_data[combined_data['year'] == ytp]
+    X = teams
 
     X = X.drop('year', axis=1)
-    y = y.drop('year', axis=1)
+    y2 = teams_comp.drop('year', axis=1)
 
 
 
+    combined_data_comp.to_csv('combined_data_comp.csv', index=False)
     combined_data.to_csv('combined_data.csv', index=False)
 
     s = setup(data=X, target='playoff', session_id=123, normalize=True)
@@ -88,11 +115,13 @@ def pipeline(teams, players_teams, coaches, ytp):
 
     models = ['rf', 'et', 'gbc', 'lr', 'dt', 'svm', 'lda', 'ridge', 'ada', 'knn', 'nb', 'qda', 'dummy']
     #models = ['dt','rf','et']
-
-    for model in models:
-        print('\n Model actual performance data:\n')
-        predictions = predict_model(compare_models(include=[model]), data=y)
-        print('----------------------------------------------------------------')
+    model = compare_models(models)
+    for key in X.keys():
+        if key not in y2.keys():
+            y2[key] = pd.Series(dtype=X[key].dtype)
+    y2 = y2.drop("playoff", axis=1)
+    predictions = predict_model(model, data=y2)
+    predictions.to_csv("predictions.csv")
 
 """
     for model in models:
