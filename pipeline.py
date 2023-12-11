@@ -66,6 +66,7 @@ def pipeline(teams, players_teams, coaches, ytp):
     #compare_models()
 
     models = ['rf', 'et', 'gbc', 'lr', 'dt', 'svm', 'lda', 'ridge', 'ada', 'knn', 'nb', 'qda', 'dummy']
+    #models = ['dt','rf','et']
 
     for model in models:
         print('Model expected performance data:\n')
@@ -73,4 +74,22 @@ def pipeline(teams, players_teams, coaches, ytp):
         print('\n Model actual performance data:\n')
         predictions = predict_model(best, data=y)
         print('----------------------------------------------------------------')
+    
+
+    """for model in models:
+        print('Model expected performance data:\n')
+        best = compare_models(include=[model])
+
+        print('\n Model actual performance data:\n')
+        predictions = predict_model(best, data=y)
+
+        # Interpretação do modelo
+        interpret_model(best)
+
+        # Gráficos interpretativos
+        plot_model(best, plot='feature')
+        plot_model(best, plot='confusion_matrix')
+        plot_model(best, plot='boundary')
+
+        print('----------------------------------------------------------------')"""
 
