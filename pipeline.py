@@ -1,5 +1,6 @@
 from data_manip import *
 import pandas as pd
+import matplotlib.pyplot as plt
 import os
 from sklearn.model_selection import train_test_split
 from pycaret.classification import *
@@ -53,11 +54,31 @@ def pipeline(teams, players_teams, coaches, ytp):
 
     combined_data = combined_data.round(2)
 
+    threshold = 0.2
+
+    # Calculate the correlation matrix
+    correlation_data = combined_data
+    correlation_data['playoff'] = correlation_data['playoff'].map({'N': 0, 'Y': 1})
+    correlation_matrix = correlation_data.corr()
+
+    # Extract columns with correlation >= threshold
+    high_corr_columns = correlation_matrix[abs(correlation_matrix['playoff']) >= threshold].index.tolist()
+    high_corr_columns = [col for col in high_corr_columns if abs(correlation_matrix.loc['playoff', col]) <= 0.8]
+
+    # Include 'playoff' column in the selected columns
+    high_corr_columns.append('playoff')
+    high_corr_columns.append('year')
+
+    # Create a new DataFrame with only the selected columns
+    combined_data = combined_data[high_corr_columns]
+
     X = combined_data[combined_data['year'] < ytp]
     y = combined_data[combined_data['year'] == ytp]
 
     X = X.drop('year', axis=1)
     y = y.drop('year', axis=1)
+
+
 
     combined_data.to_csv('combined_data.csv', index=False)
 
@@ -69,14 +90,12 @@ def pipeline(teams, players_teams, coaches, ytp):
     #models = ['dt','rf','et']
 
     for model in models:
-        print('Model expected performance data:\n')
-        best = compare_models(include=[model])
         print('\n Model actual performance data:\n')
-        predictions = predict_model(best, data=y)
+        predictions = predict_model(compare_models(include=[model]), data=y)
         print('----------------------------------------------------------------')
-    
 
-    """for model in models:
+"""
+    for model in models:
         print('Model expected performance data:\n')
         best = compare_models(include=[model])
 
