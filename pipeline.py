@@ -115,13 +115,16 @@ def pipeline(teams, players_teams, coaches, teams_comp, player_teams_comp, coach
 
     models = ['rf', 'et', 'gbc', 'lr', 'dt', 'svm', 'lda', 'ridge', 'ada', 'knn', 'nb', 'qda', 'dummy']
     #models = ['dt','rf','et']
-    model = compare_models(models)
     for key in X.keys():
         if key not in y2.keys():
             y2[key] = pd.Series(dtype=X[key].dtype)
     y2 = y2.drop("playoff", axis=1)
-    predictions = predict_model(model, data=y2)
-    predictions.to_csv("predictions.csv")
+
+    for model in models:
+        print('\n Model actual performance data:\n')
+        predictions = predict_model(compare_models(include=[model]), data=y2)
+        predictions.to_csv("prediction_" + model + ".csv")
+        print('----------------------------------------------------------------')
 
 """
     for model in models:

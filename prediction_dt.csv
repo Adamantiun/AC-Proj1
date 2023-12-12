@@ -1,0 +1,13 @@
+,tmID,home_win_pct,away_win_pct,conf_win_rate,scoring_efficiency,reb_efficiency,defensive_pts_efficiency,def_reb_efficiency,off_reb_efficiency,ast_to_ratio,steals_per_game,blocks_per_game,prediction_label,prediction_score
+0,ATL,,,,,,,,,,,,N,1.0
+1,CHI,,,,,,,,,,,,N,1.0
+2,CON,,,,,,,,,,,,N,1.0
+3,IND,,,,,,,,,,,,N,1.0
+4,LAS,,,,,,,,,,,,N,1.0
+5,MIN,,,,,,,,,,,,N,1.0
+6,NYL,,,,,,,,,,,,N,1.0
+7,PHO,,,,,,,,,,,,N,1.0
+8,SAS,,,,,,,,,,,,Y,1.0
+9,SEA,,,,,,,,,,,,N,1.0
+10,TUL,,,,,,,,,,,,N,1.0
+11,WAS,,,,,,,,,,,,N,1.0
